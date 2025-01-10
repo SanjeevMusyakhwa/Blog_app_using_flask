@@ -16,6 +16,7 @@ login_manager = LoginManager(app)  # For user session management
 login_manager.login_view = 'login'  # Redirect to login if not authenticated
 
 
+
 # Database Models
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -44,6 +45,9 @@ class BlogPost(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+from api import api
+app.register_blueprint(api, url_prefix='/api')
 
 # Url and Views
 
