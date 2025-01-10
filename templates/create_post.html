@@ -1,23 +1,38 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Posts</title>
+<title>Create New Blog Post</title>
 {% endblock %}
 
 {% block body %}
+    <h2>Create a New Blog Post</h2>
 
-    <h2>Create new BlogPost</h2>
-    <form action = '/' method = 'POST'>
-        <label for="title">Title:</label>
-        <input class="form-control" type="text" name = 'title' id = 'title' placeholder="Enter title" required aria-label="Enter title">
-        <br>
-        <label for="author">Author:</label>
-        <input class="form-control" type="text" name = 'author' id = 'author' placeholder="Enter author name" aria-label="Enter author name">
-        <br>
-        <label for="content">Post:</label>
-        <textarea class="form-control" name = 'content' id="content" rows="5" placeholder="Enter Content here !!!" ></textarea>
-        <br>
-       
-        <input type = 'submit'value = 'POST' >
+    <form action="{{ url_for('create_post') }}" method="POST">
+        <!-- Title Field -->
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input class="form-control" type="text" name="title" id="title" placeholder="Enter title" required aria-label="Enter title">
+        </div>
+
+        <!-- Author Field (auto-filled if the user is logged in) -->
+        <div class="form-group">
+            <label for="author">Author:</label>
+            {% if current_user.is_authenticated %}
+                <input class="form-control" type="text" name="author" id="author" value="{{ current_user.username }}" readonly>
+            {% else %}
+                <input class="form-control" type="text" name="author" id="author" placeholder="Enter author name" aria-label="Enter author name" required>
+            {% endif %}
+        </div>
+
+        <!-- Content Field -->
+        <div class="form-group">
+            <label for="content">Post Content:</label>
+            <textarea class="form-control" name="content" id="content" rows="5" placeholder="Enter Content here !!!" required></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Create Post</button>
+        </div>
     </form>
 {% endblock %}
