@@ -94,22 +94,29 @@ def create_post():
     else:
         return render_template('create_post.html')
 
-@app.route('/posts/delete/<int:post_id>', methods=['DELETE'])
+@app.route('/posts/delete/<int:post_id>', methods=['POST'])
 @login_required
 def delete(post_id):
+    try:
+        # Fetch the post by ID or return a 404 if not found
+        post = BlogPost.query.get_or_404(post_id)
 
-    # Fetch the post by ID or return a 404 if not found
-    post = BlogPost.query.get_or_404(post_id)
+        # Check if the current user is the owner of the post
+        if post.user_id != current_user.id:
+            return jsonify({"error": "You do not have permission to delete this post"}), 403
 
-    # Check if the current user is the owner of the post
-    if post.user_id != current_user.id:
-        return jsonify({"error": "You do not have permission to delete this post"}), 403
+        # Delete the post
+        db.session.delete(post)
+        db.session.commit()
 
-    # Delete the post
-    db.session.delete(post)
-    db.session.commit()
+        return redirect('/')
 
-    return jsonify({"message": "Post deleted successfully"}),
+    except Exception as e:
+        # Log the exception for debugging
+        app.logger.error(f"Error deleting post: {e}")
+        return jsonify({"error": "An error occurred while trying to delete the post"}), 500
+
+
 
 @app.route('/posts/edit/<int:id>', methods=['POST', 'GET'])
 def edit(id):
