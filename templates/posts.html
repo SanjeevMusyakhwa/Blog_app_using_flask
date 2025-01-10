@@ -45,7 +45,7 @@
 
   {% for post in posts %}
   <div class="post-card">
-    <h2> <a href="posts/detail/{{ post.id }}" >{{ post.title }} </a></h2>
+    <h2> <a href="posts/detail/{{ post.id }}" target="_blank">{{ post.title }} </a></h2>
     <small>
       @ {% if post.author %} {{ post.author }} {% else %} N/A {% endif %} on {{
       post.date_posted }}
@@ -65,5 +65,19 @@
     </p>
   </div>
   {% endfor %}
+<div class="pagination d-flex justify-content-center">
+    {% if posts.has_prev %}
+    <a href="{{ url_for('posts', page=posts.prev_num) }}" class="btn btn-secondary">Previous</a>
+    {% endif %}
+
+    <!-- Page Numbers -->
+    {% for page_num in range(1, posts.pages + 1) %}
+        <a href="{{ url_for('posts', page=page_num) }}" class="btn btn-light {% if page_num == posts.page %}active{% endif %}">{{ page_num }}</a>
+    {% endfor %}
+
+    {% if posts.has_next %}
+    <a href="{{ url_for('posts', page=posts.next_num) }}" class="btn btn-secondary">Next</a>
+    {% endif %}
+</div>
 </div>
 {% endblock %}

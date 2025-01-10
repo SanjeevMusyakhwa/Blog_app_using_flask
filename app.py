@@ -8,6 +8,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 
 db= SQLAlchemy(app)    # link flask app to database  
 
+
+# Database 
+
 # create database
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable = False)
@@ -18,26 +21,12 @@ class BlogPost(db.Model):
 
     def __repr__(self):
         return 'Blog Post' + str(self.id)
-# dummy data 
-'''
-all_posts = [
-    {
-        'title': 'Post 1',
-        'author': 'mark',
-        'content': 'content of post 1. This is Prashant.'
-    },
-    {
-        'title': 'Post 2',
-        'content': 'content of post 2. This is Anam.'
-    },
-    
-    {
-        'title': 'Post 3',
-        'content': 'content of post 3. This is Preksha.'
-    }
-]
-'''
-# after this define a variable in route where this data is to be passed
+
+
+# Pagination
+
+
+# Url and Views 
 
 @app.route('/', methods = ['GET','POST'])
 def posts():
@@ -46,29 +35,31 @@ def posts():
         post_title = request.form['title']
         post_content = request.form['content']
         post_author = request.form['author']
-        new_post = BlogPost(title = post_title, content= post_content, author = post_author)
-        db.session.add(new_post) # add data in db for current session
+        create_post = BlogPost(title = post_title, content= post_content, author = post_author)
+        db.session.add(create_post) # add data in db for current session
         db.session.commit()     # save permanently in file
 
         return redirect('/')
     else:
-        all_posts = BlogPost.query.order_by(BlogPost.date_posted).all()
+        page = request.args.get('page', 1, type=int)
+        posts_per_page = 4
+        all_posts = BlogPost.query.order_by(BlogPost.date_posted.desc()).paginate(page=page, per_page=posts_per_page)
         return render_template('posts.html',posts = all_posts)
 
 @app.route('/posts/new', methods = ['GET','POST'])        
-def new_post():
+def create_post():
     if request.method == 'POST':
         # read from form and add them to db
         post_title = request.form['title']
         post_content = request.form['content']
         post_author = request.form['author']
-        new_post = BlogPost(title = post_title, content= post_content, author = post_author)
-        db.session.add(new_post) # add data in db for current session
+        create_post = BlogPost(title = post_title, content= post_content, author = post_author)
+        db.session.add(create_post) # add data in db for current session
         db.session.commit()     # save permanently in file
 
         return redirect('/')
     else:
-        return render_template('new_post.html')    
+        return render_template('create_post.html')    
 @app.route('/posts/delete/<int:id>')
 def delete(id):
     post = BlogPost.query.get_or_404(id)
@@ -95,6 +86,8 @@ def post_detail(id):
     post = BlogPost.query.get_or_404(id)  # Fetch the post by ID or return a 404 if not found
     return render_template('post_detail.html', post=post)
 
+
+# end of Url and Views
 
 if __name__ == "__main__":
     app.run(debug=1)
