@@ -1,24 +1,50 @@
-{% extends 'base.html' %}
-
-{% block head %}
+{% extends 'base.html' %} {% block head %}
 <title>Edit Post</title>
-{% endblock %}
+{% endblock %} {% block body %}
 
-{% block body %}
-
-<h2>Edit blogPost: </h2>
-<form action = '/posts/edit/{{post.id}}' method = 'POST'>
-    <label for="title">Title:</label>
-    <input class="form-control" type="text" name = 'title' id = 'title' value = '{{post.title}}' aria-label="Enter title">
-    <br>
+<h2>Edit blogPost:</h2>
+<form action="/posts/edit/{{post.id}}" method="POST">
+  <label for="title">Title:</label>
+  <input
+    class="form-control"
+    type="text"
+    name="title"
+    id="title"
+    value="{{post.title}}"
+    aria-label="Enter title"
+  />
+  <br />
+  <div class="form-group">
     <label for="author">Author:</label>
-    <input class="form-control" type="text" name = 'author' id = 'author' value = '{{post.author}}' aria-label="Enter author name">
-    <br>
-    <label for="content">Post:</label>
-    <textarea class="form-control" name = 'content' id="content"  rows="5"  >{{post.content}}</textarea>
-    <br>
-   
-    <input type = 'submit'value = 'Save' >
+    {% if current_user.is_authenticated %}
+    <input
+      class="form-control"
+      type="text"
+      name="author"
+      id="author"
+      value="{{ current_user.username }}"
+      readonly
+    />
+    {% else %}
+    <input
+      class="form-control"
+      type="text"
+      name="author"
+      id="author"
+      placeholder="Enter author name"
+      aria-label="Enter author name"
+      required
+    />
+    {% endif %}
+  </div>
+  <br />
+  <label for="content">Post:</label>
+  <textarea class="form-control" name="content" id="content" rows="5">
+{{post.content}}</textarea
+  >
+  <br />
+
+  <input type="submit" value="Save" />
 </form>
 
 {% endblock %}
